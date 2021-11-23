@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<!-- You must include this JavaScript file -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+<!-- driver script -->
+<script src="../driver_script/adaptive-airplane.js"></script>
+<!-- <script src="https://inwonakng.github.io/airplane-script/adaptive-airplane.js"></script> -->
+
+
+<!-- for icons -->
+<script type="text/javascript" src="https://drive.google.com/uc?export=download&id=1A8TZ8U6vAt5JyrPj9XfdDW_jM6J5cbYd"></script>
+
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,
+   please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
+<!-- You must include crowd-form so that your task submits answers to MTurk -->
+
+<meta charset="utf-8"/>
+
+<style>
+   table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      /* width: 400px; */
+   }
+   th{
+      /* width: 150px; */
+      border-right: 0px white;
+   }
+
+   .notslimcon{
+      position: relative;   
+      width: 960px;
+      height:160px;
+   }
+
+   .midcontainer {     
+      position: relative;   
+      width: 960px;
+      height:200px;
+   }
+
+   .bigcontainer {     
+      position: relative;   
+      width: 960px;
+      height:240px;
+   }
+
+   .container {     
+      position: relative;   
+      width: 960px;
+      height:270px;
+   }
+
+   .container div {
+        /* margin:10px; */
+        width: 480px;
+        /* height:200px; */
+        left:0px;
+   }
+
+   .container slider{
+      position:absolute;
+      left:540px;
+      top:90px;
+   }
+
+   .slimcontainer {
+      position: relative;   
+      width: 960px;
+      height:300px;
+   }
+
+   .slimmest {
+    position: relative;   
+      width: 960px;
+      height:120px;
+   }
+
+   .slimmest div{
+     width:480px;
+     left:0px;
+   }
+
+   .slimmest slider{
+      position:absolute;
+      left:540px;
+      top:40px;
+   }
+
+   .sliderlabel {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 70px;
+        height:30px;
+        float:left;
+        font-size: small;
+   }
+
+   .smallcontainer {
+        /* margin:10px; */
+        width: 800px;
+        height:30px;
+   }
+   .smallcontainer div {
+        width: 200px;
+        height:30px;
+        float:left;
+   }
+   .smallcontainer a {
+        width: 200px;
+        height:30px;
+        float:left;
+   }
+
+   .smallcontainer l {
+        width: 120px;
+        height:30px;
+        float:left;
+   }
+
+   .loadingpage{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center
+  }
+
+</style>
+
+<div id="consentform" style="margin: 10px;">
+  <p>
+    Please read the consent form and indicate that you have knowingly consented to participate in the research.
+  </p>
+  <p>
+    <a href="https://drive.google.com/file/d/1JH3kVK2fftHV7oWuckYhGjwA_mWAhQtk/view?usp=sharing" target="blank">Click here to view the research consent form</a>
+  </p>
+  By clicking <b>I Accept</b> below, I confirm that I am at least 18
+  years of age and that I consent to participation in the research study
+  described above.
+  <br>
+  After clicking accept, you will be presented with an optional demographic survey and a quick attention check before the actual survey starts.
+  <br>
+  Please note that if you fail the attention check, your response will be rejected.
+  <br>
+  <br>
+  <crowd-button onclick="accept()">I accept</crowd-button>
+  <crowd-button onclick="goback()">I do not accept</crowd-button>
+</div>
+<div id="startloading" class="loadingpage">
+  <img src="https://inwonakng.github.io/airplane-script/loading.gif">
+  <p>
+  Loading survey...
+  </p>
+</div>
+
+<crowd-form id="survey" answer-format="flatten-objects" style="display:none;margin: 10px;">
+  <div id="demographics">
+    <p>This is an optional survey to help us understand the results of our survey better. </p>
+    <p>Please note that these fields are not required, and you can skip if you do not want to share demographic information.</p>
+    <br>
+    <label for="agegroup">Age group:</label>
+    <select name="agegroup" id="agegroup" style="position:absolute;left:200px">
+      <option value="" disabled selected>Please select a value</option>
+      <option value="10~19">10~19</option>
+      <option value="20~29">20~29</option>
+      <option value="30~39">30~39</option>
+      <option value="40~49">40~49</option>
+      <option value="50~59">50~59</option>
+      <option value="60~69">60~69</option>
+      <option value="other">Other</option>
+    </select>
+    <br><br>
+    <label for="gender">Gender:</label>
+    <select name="gender" id="gender" style="position:absolute;left:200px">
+      <option value="" disabled selected>Please select a value</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+    <br><br>
+    <label for="education">Highest education level:</label>
+    <select name="education" id="education" style="position:absolute;left:200px">
+      <option value="" disabled selected>Please select a value</option>
+      <option value="highschool">Highschool</option>
+      <option value="college">College</option>
+      <option value="graduate">Graduate School (or any other post college education)</option>
+      <option value="other">Other</option>
+    </select>
+    <br>
+    <br>
+    <crowd-button onclick='showsurvey()'>Submit and next</crowd-button>
+    <crowd-button onclick='showsurvey()'>Skip</crowd-button>
+    <br>
+    <br>
+  </div>
+  
+  <div id='realsurvey' style="display:none">
+   <crowd-instructions link-text="View instructions" link-type="button">
+      <short-summary>
+         <p>Given the particular scenario, please rank the options in an order that you think you are more likely to take action for</p>
+      </short-summary>
+      <detailed-instructions>
+         <h3>Assign points to each option according to how likely you are to help the character(s) in each option</h3>
+         <p>Given the particular scenario, please assign points to the given options.
+            Higher points for options that you are more likely to help, and lower points for options that
+            you are less likely to help in comparision to the other given options.
+         </p>
+      </detailed-instructions>
+      <positive-example>
+         <p>Points: A = 10 > B = 7 > C = 3</p>
+         <p>Explanation: I would choose to save A above everyone else because
+            I think that A is the most valuable to society.
+            Then I would rank B above C because C is old and B has a bright future ahead of her.
+            I also think that A has the best use of the life jacket,
+            since her chance of survival with it is the highest.
+         </p>
+         <p>This answer shows why you scored each options in the way you did, and you provide an explanation for all rankings.</p>
+      </positive-example>
+      <negative-example>
+         <p>Points: A = 10 > B = 1 > C = 0</p>
+         <p>Explanation: I like A's type the most and don't care much about the others</p>
+         <p>This answer does not provide a specific enough reasoning for your ranking.
+            Even if the participant provided rankings, they did not provide an explicit
+            reasoning behind the score of each option in the context of the given scenario.
+         </p>
+      </negative-example>
+   </crowd-instructions>
+   <div id="prompt">
+      <h3>
+        <!-- <a id="scenario">Scenario 1</a> -->
+        Suppose you are on an airplane that is about to land on a water body and there is only one rescue jacket left. 
+        <br>Whom would you prefer to give the jacket to?
+      </h3>
+   </div>
+
+   <div id="questionload" class="loadingpage">
+    <img src="https://inwonakng.github.io/airplane-script/loading.gif">
+    <p>
+    Loading question...
+    </p>
+  </div>
+
+  <div style="display: none;" id="asked_scenario">
+  </div>
+
+   <div id="q17" style="display:none">
+    <h4>What information about the passengers did you think was most important to making the decision? </h4>
+    <br>
+    <div class="smallcontainer">
+      <div>
+        <b>Age</b>
+      </div>
+          <l>Less Important</l>
+          <a><crowd-slider name="age_importance" id="age_importance" min="0" max="10" required pin></crowd-slider></a>
+          <l>More Important</l>
+    </div>
+   <br>
+    <div class="smallcontainer">
+      <div>
+        <b>Gender</b>
+      </div>
+          <l>Less Important</l>
+          <a><crowd-slider name="gender_importance" id="gender_importance" min="0" max="10" required pin></crowd-slider></a>
+          <l>More Important</l>
+    </div>
+   <br>
+    <div class="smallcontainer">
+      <div>
+        <b>Income level</b>
+      </div>
+          <l>Less Important</l>
+          <a><crowd-slider name="income_importance" id="income_importance" min="0" max="10" required pin></crowd-slider></a>
+          <l>More Important</l>
+    </div>
+   <br>
+    <div class="smallcontainer">
+      <div>
+        <b>Number of dependents</b>
+      </div>
+          <l>Less Important</l>
+          <a><crowd-slider name="dependents_importance" id="dependents_importance" min="0" max="10" required pin></crowd-slider></a>
+          <l>More Important</l>
+    </div>
+   <br>
+    <div class="smallcontainer">
+      <div>
+        <b>Health</b>
+      </div>
+          <l>Less Important</l>
+          <a><crowd-slider name="health_importance" id="health_importance" min="0" max="10" required pin></crowd-slider></a>
+          <l>More Important</l>
+    </div>
+   <br>
+    <div class="smallcontainer">
+      <div>
+        <b>Survival chance with jacket</b>
+      </div>
+          <l>Less Important</l>
+          <a><crowd-slider name="survwith_importance" id="survwith_importance" min="0" max="10" required pin></crowd-slider></a>
+          <l>More Important</l>
+    </div>
+    <br>
+    <div class="smallcontainer">
+      <div>
+        <b>Survival chance increase with jakcet</b>
+      </div>
+          <l>Less Important</l>
+          <a><crowd-slider name="survdif_importance" id="survdif_importance" min="0" max="10" required pin></crowd-slider></a>
+          <l>More Important</l>
+    </div>
+  
+    <br>
+    <div>
+    <h4>Are there any other factors not mentioned in the list above that you think are also important in making the decision?</h4>
+    <small>Please write more than 20 words</small>
+    <crowd-text-area name="suggestion" rows="2" placeholder="..." style="border:2px solid #000000" onkeyup="wordcount(lastwordcount,this.value)" required></crowd-text-area>
+    <small>Wordcount: </small><a id=lastwordcount><small>0</small></a>
+
+  </div>
+    <br>
+  </div>
+
+  <div id="buttons">
+    <br>
+    Question: <ee id="scenario_index"></ee>
+    <br>
+    <!-- <crowd-button id="prevbtn" onclick="prev()" disabled>Prev</crowd-button>    -->
+    <crowd-button id="nextbtn" onclick="next()">Next</crowd-button>
+  </div>
+   <br>
+   <br>
+ </div>
+ 
+</crowd-form>

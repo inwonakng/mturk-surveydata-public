@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<!-- You must include this JavaScript file -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+<!-- for random -->
+<script src="https://drive.google.com/uc?export=download&id=1pKbNvfr9LffstYEgvdvoikV4MCg8kryY"></script>
+<!-- for focused -->
+<script src="https://drive.google.com/uc?export=download&id=1L2EySJDsVDUI4Wd9d8p6YsYpqBSJezv4"></script>
+<!-- for survivability -->
+<script src="https://drive.google.com/uc?export=download&id=1SPjQ6Nm2_jt0hEAoaT-wr7s_cFNI7ytC"></script>
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,
+   please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
+<!-- You must include crowd-form so that your task submits answers to MTurk -->
+<div id="consentform">
+  <p>
+    Please read the consent form and indicate that you have knowingly consented to participate in the research.
+  </p>
+  <p>
+    <a href="https://drive.google.com/file/d/1JH3kVK2fftHV7oWuckYhGjwA_mWAhQtk/view?usp=sharing" target="blank">Click here to view the research consent form</a>
+  </p>
+  By clicking <b>I Accept</b> below, I confirm that I am at least 18
+  years of age and that I consent to participation in the research study
+  described above.
+  <br>
+  <br>
+  <crowd-button onclick="accept()">I accept</crowd-button>
+  <crowd-button onclick="goback()">I do not accept</crowd-button>
+</div>
+
+<crowd-form id="survey" answer-format="flatten-objects" style="display:none">
+  <div id="demographics">
+    <p>This is an optional survey to help us understand the results of our survey better. </p>
+    <p>Please note that these fields are not required, and you can skip if you do not want to share demographic information.</p>
+    <br>
+    <label for="agegroup">Age group:</label>
+    <select name="agegroup" id="agegroup">
+      <option value="10~20">10~19</option>
+      <option value="20~29">20~29</option>
+      <option value="30~39">30~39</option>
+      <option value="40~49">40~49</option>
+      <option value="50~59">50~59</option>
+      <option value="60~69">60~69</option>
+      <option value="other">Other</option>
+    </select>
+    <br>
+    <label for="gender">Gender:</label>
+    <select name="gender" id="gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+    <br>
+    <label for="education">Highest education level:</label>
+    <select name="education" id="education">
+      <option value="highschool">Highschool</option>
+      <option value="college">College</option>
+      <option value="graduate">Graduate School (or any other post college education)</option>
+      <option value="other">Other</option>
+    </select>
+    <br>
+    <br>
+    <crowd-button onclick='showsurvey()'>Submit and next</crowd-button>
+    <crowd-button onclick='showsurvey()'>Skip</crowd-button>
+    <br>
+    <br>
+  </div>
+  <div id='realsurvey' style="display:none">
+   <crowd-instructions link-text="View instructions" link-type="button">
+      <short-summary>
+         <p>Given the particular scenario, please rank the options in an order that you think you are more likely to take action for</p>
+      </short-summary>
+      <detailed-instructions>
+         <h3>Assign points to each option according to how likely you are to help the character(s) in each option</h3>
+         <p>Given the particular scenario, please assign points to the given options.
+            Higher points for options that you are more likely to help, and lower points for options that
+            you are less likely to help in comparision to the other given options.
+         </p>
+      </detailed-instructions>
+      <positive-example>
+         <p>Points: A = 10 > B = 7 > C = 3 > D = 3</p>
+         <p>Explanation: I would choose to save A above everyone else because
+            I think that A is the most valuable to society.
+            Then I would rank B above C because C is old and B has a bright future ahead of her.
+            I also think that A has the best use of the life jacket,
+            since her chance of survival with it is the highest. 
+            I ranked C and D the same since it doesn't make a big difference to me
+         </p>
+         <p>This answer shows why you scored each options in the way you did, and you provide an explanation for all rankings.</p>
+      </positive-example>
+      <negative-example>
+         <p>Points: A = 10 > B = 1 > C = 0 > D = 0</p>
+         <p>Explanation: I like A's type the most and don't care much about the others</p>
+         <p>This answer does not provide a specific enough reasoning for your ranking.
+            Even if the participant provided rankings, they did not provide an explicit
+            reasoning behind the score of each option in the context of the given scenario.
+         </p>
+      </negative-example>
+   </crowd-instructions>
+   <h3 id="scenario">Scenario 1</h3>
+   <p id="prompt">
+      <!-- Where the scenario is explained -->
+      Suppose you are on an airplane that is about to land on a water body and there is only one rescue jacket left. Given the following options, who are you more likely to give the jacket to?
+   </p>
+   <div id="q0">
+      <div>
+         <b>Option A:</b>
+         <p id="q0textA">
+            A male young child in great health. They would survive with a chance of 9% with the jacket and with a chance of 4% without it.
+        </p>
+         <b>Option B:</b>
+         <p id="q0textB">
+            A male college student parent with a baby with asthma visiting family far away. They would survive with a chance of 56% with the jacket and with a chance of 21% without it.
+        </p>
+         <b>Option C:</b>
+         <p id="q0textC">
+            A male 27 year old pizza delivery person who is terminally ill with 5 years left on a once in a lifetime chance trip from lottery. They would survive with a chance of 46% with the jacket and with a chance of 29% without it.
+        </p>
+         <b>Option D:</b>
+         <p id="q0textD">
+            A female middle aged homeless person who is wheelchair bound on a once in a lifetime chance trip from lottery. They would survive with a chance of 19% with the jacket and with a chance of 13% without it.         
+        </p>
+      </div>
+      <br>
+      <div>
+         <h3>Please assign each option a score on how you feel about them</h3>
+         <p><small>
+           These scores are relative to each other and are meant to express the ranking between them.
+         </small></p>
+         <p><small>
+           The more you think this option should be saved, the higher the score should be.
+         </small></p>
+         <p><small>
+           example: A score of A: 10, B: 8, C: 6, D: 6 would mean you want to save option A the most, then option B and finally option C and D are tied.
+         </small></p>
+         <br>
+         <div>
+            Option A
+            <p>
+               <crowd-slider name="q0optionA" id="q0optionA" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option B
+            <p>
+               <crowd-slider name="q0optionB" id="q0optionB" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option C
+            <p>
+               <crowd-slider name="q0optionC" id="q0optionC" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option D
+            <p>
+               <crowd-slider name="q0optionD" id="q0optionD" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <!-- <crowd-button onclick="reset()">Reset</crowd-button>
+            <crowd-button>Rescale</crowd-button> -->
+      </div>
+      <input type="text" name="q0optionset" id="q0optionset" style="display:none" value = "0">
+      <div>
+         <p>Please explain your reasoning behind the scores that you assigned to each option (Please write more than 20 words)</p>
+         <crowd-text-area name="q0essay" id="q0essay" onkeyup="wordcount(q0wordcount,this.value)" rows="4" placeholder="..." required style="border:2px solid #000000"></crowd-text-area>
+         <small>Wordcount: </small><a id=q0wordcount><small>0</small></a>
+      </div>
+   </div>
+   <div id="q1" style="display:none">
+      <div>
+         <b>Option A:</b>
+         <p id="q1textA">
+            38 year old woman on the way to an expensive concert who would survive with a chance of 75% with the rescue jacket and with a chance of 10% without the rescue jacket.
+        </p>
+         <b>Option B:</b>
+         <p id="q1textB">
+            37 year old woman visiting family far away who would survive with a chance of 75% with the rescue jacket and with a chance of 10% without the rescue jacket.
+        </p>
+         <b>Option C:</b>
+         <p id="q1textC">
+            31 year old woman on a once in a lifetime chance trip from lottery who would survive with a chance of 75% with the rescue jacket and with a chance of 10% without the rescue jacket.
+        </p>
+         <b>Option D:</b>
+         <p id="q1textD">
+            26 year old woman on a routine trip who would survive with a chance of 75% with the rescue jacket and with a chance of 10% without the rescue jacket.         
+        </p>
+      </div>
+      <br>
+      <div>
+         <h3>Please assign each option a score on how you feel about them</h3>
+         <p><small>
+           These scores are relative to each other and are meant to express the ranking between them.
+         </small></p>
+         <p><small>
+           The more you think this option should be saved, the higher the score should be.
+         </small></p>
+         <p><small>
+            example: A score of A: 10, B: 8, C: 6, D: 6 would mean you want to save option A the most, then option B and finally option C and D are tied.         </small></p>
+         <br>
+         <div>
+            Option A
+            <p>
+               <crowd-slider name="q1optionA" id="q1optionA" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option B
+            <p>
+               <crowd-slider name="q1optionB" id="q1optionB" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option C
+            <p>
+               <crowd-slider name="q1optionC" id="q1optionC" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option D
+            <p>
+               <crowd-slider name="q1optionD" id="q1optionD" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+      </div>
+      <input type="text" name="q1optionset" id="q1optionset" style="display:none" value = "0">
+      <div>
+         <p>Please explain your reasoning behind the scores that you assigned to each option (Please write more than 20 words)</p>
+         <crowd-text-area name="q1essay" id="q1essay" onkeyup="wordcount(q1wordcount,this.value)" rows="4" placeholder="..." required style="border:2px solid #000000"></crowd-text-area>
+         <small>Wordcount: </small><a id=q1wordcount><small>0</small></a>
+      </div>
+   </div>
+   <div id="q2" style="display:none">
+      <div>
+         <b>Option A:</b>
+         <p id="q2textA">
+            29 year old travelling with clubmates on a vacation who would survive with a chance of 50% with the rescue jacket and with a chance of 10% without the rescue jacket.         \
+        </p>
+         <b>Option B:</b>
+         <p id="q2textB">
+            24 year old travelling with clubmates on a vacation who would survive with a chance of 60% with the rescue jacket and with a chance of 10% without the rescue jacket.
+        </p>
+         <b>Option C:</b>
+         <p id="q2textC">
+            26 year old travelling with clubmates on a vacation who would survive with a chance of 70% with the rescue jacket and with a chance of 10% without the rescue jacket.
+        </p>
+         <b>Option D:</b>
+         <p id="q2textD">
+            27 year old travelling with clubmates on a vacation who would survive with a chance of 90% with the rescue jacket and with a chance of 10% without the rescue jacket.         
+        </p>
+      </div>
+      <br>
+      <div>
+         <h3>Please assign each option a score on how you feel about them</h3>
+         <p><small>
+           These scores are relative to each other and are meant to express the ranking between them.
+         </small></p>
+         <p><small>
+           The more you think this option should be saved, the higher the score should be.
+         </small></p>
+         <p><small>
+            example: A score of A: 10, B: 8, C: 6, D: 6 would mean you want to save option A the most, then option B and finally option C and D are tied.         </small></p>
+         <br>
+         <div>
+            Option A
+            <p>
+               <crowd-slider name="q2optionA" id="q2optionA" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option B
+            <p>
+               <crowd-slider name="q2optionB" id="q2optionB" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option C
+            <p>
+               <crowd-slider name="q2optionC" id="q2optionC" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option D
+            <p>
+               <crowd-slider name="q2optionD" id="q2optionD" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+      </div>
+      <input type="text" name="q2optionset" id="q2optionset" style="display:none" value = "0">
+      <div>
+         <p>Please explain your reasoning behind the scores that you assigned to each option (Please write more than 20 words)</p>
+         <crowd-text-area name="q2essay" id="q2essay" onkeyup="wordcount(q2wordcount,this.value)" rows="4" placeholder="..." required style="border:2px solid #000000"></crowd-text-area>
+         <small>Wordcount: </small><a id=q2wordcount><small>0</small></a>
+      </div>
+   </div>
+   <div id="q3" style="display:none">
+      <div>
+         <b>Option A:</b>
+         <p id="q3textA">
+            A male college student pizza delivery person who is wheelchair bound on a once in a lifetime chance trip from lottery. They would survive with a chance of 24% with the jacket and with a chance of 20% without it.
+        </p>
+         <b>Option B:</b>
+         <p id="q3textB">
+            A male middle aged ex-convict in great health on the way to an expensive concert. They would survive with a chance of 55% with the jacket and with a chance of 34% without it.
+        </p>
+         <b>Option C:</b>
+         <p id="q3textC">
+            A female senior citizen homeless person who is terminally ill with 5 years left on a once in a lifetime chance trip from lottery. They would survive with a chance of 33% with the jacket and with a chance of 0% without it.
+        </p>
+         <b>Option D:</b>
+         <p id="q3textD">
+            A male 27 year old professor with asthma visiting family far away. They would survive with a chance of 38% with the jacket and with a chance of 38% without it.         </p>
+      </div>
+      <br>
+      <div>
+         <h3>Please assign each option a score on how you feel about them</h3>
+         <p><small>
+           These scores are relative to each other and are meant to express the ranking between them.
+         </small></p>
+         <p><small>
+           The more you think this option should be saved, the higher the score should be.
+         </small></p>
+         <p><small>
+            example: A score of A: 10, B: 8, C: 6, D: 6 would mean you want to save option A the most, then option B and finally option C and D are tied.         </small></p>
+         <br>
+         <div>
+            Option A
+            <p>
+               <crowd-slider name="q3optionA" id="q3optionA" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option B
+            <p>
+               <crowd-slider name="q3optionB" id="q3optionB" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option C
+            <p>
+               <crowd-slider name="q3optionC" id="q3optionC" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+         <div>
+            Option D
+            <p>
+               <crowd-slider name="q3optionD" id="q3optionD" min="0" max="10" required pin></crowd-slider>
+            </p>
+         </div>
+      </div>
+      <input type="text" name="q3optionset" id="q3optionset" style="display:none" value = "1">
+      <div>
+         <p>Please explain your reasoning behind the scores that you assigned to each option (Please write more than 20 words)</p>
+         <crowd-text-area name="q3essay" id="q3essay" onkeyup="wordcount(q3wordcount,this.value)" rows="4" placeholder="..." required style="border:2px solid #000000"></crowd-text-area>
+         <small>Wordcount: </small><a id=q3wordcount><small>0</small></a>
+      </div>
+   </div>
+   <!-- <div id="q4" style="display:none">
+      <p>This section is completely optional. </p>
+      <p>Please share with us any scenario or specific options that you think would improve this survey</p>
+      <p>Responses that we find helpful may be rewarded with bonus compensation</p>
+      <br>
+      <crowd-text-area name="suggestionbox" id="suggestions" rows="4" placeholder="..." style="border:2px solid #000000"></crowd-text-area>
+   </div> -->
+   <br>
+   <crowd-button id='prevbtn' onclick="prev()" disabled>Prev</crowd-button>
+   <a id=qindex>1/4</a>
+   <crowd-button id='nextbtn' onclick="next()">Next</crowd-button>
+   <br>
+ </div>
+</crowd-form>
+
+<script>
+  window.onload = chooseOptions
+//   var display = [1,0,0,0,0]
+  var options_set = false
+  var suggestion_on = false
+  var questions = [document.getElementById('q0'),
+                   document.getElementById('q1'),
+                   document.getElementById('q2'),
+                   document.getElementById('q3')]
+   function next(){
+     var show_index
+   //   console.log('okay..')
+     for(i=0;i<questions.length;i++){
+       if(questions[i].style.display !='none' && i < questions.length-1){
+         //  console.log('found'+i)
+         document.getElementById('prompt').style.display='block'
+         document.getElementById('prevbtn').disabled=false
+         show_index = i + 2
+         questions[i].style.display = 'none'
+         questions[i+1].style.display = 'block'
+         document.getElementById('scenario').scrollIntoView()
+         document.getElementById('qindex').text = show_index + '/' + questions.length
+         document.getElementById('scenario').innerHTML = 'Scenario '+show_index
+         if(i == questions.length-2){
+            document.getElementById('nextbtn').disabled=true
+            if(suggestion_on){
+               document.getElementById('scenario').innerHTML = 'Bonus question'
+               document.getElementById('prompt').style.display='none'
+            }
+         }
+         break
+       }
+     }
+   }
+
+   function prev(){
+     var show_index
+     for(i=0;i<questions.length;i++){
+       if(questions[i].style.display != 'none' && i > 0){
+         document.getElementById('prompt').style.display='block'
+         document.getElementById('nextbtn').disabled=false
+         show_index = i
+         questions[i].style.display = 'none'
+         questions[i-1].style.display = 'block'
+         document.getElementById('scenario').scrollIntoView()
+         // display[i] = 0
+         // display[i-1] = 1
+         document.getElementById('qindex').text = show_index + '/' + questions.length
+         document.getElementById('scenario').innerHTML = 'Scenario '+show_index
+         if(i == 1){
+           document.getElementById('prevbtn').disabled=true
+         }
+         break
+       }
+     }
+   }
+
+   function accept(){
+     document.getElementById("consentform").style.display='none'
+     document.getElementById('survey').style.display='block'
+     if(!options_set){
+       chooseOptions()
+     }
+   }
+
+   function goback(){
+     window.history.back()
+   }
+
+   function genRanNums(thres,count){
+     arr = []
+     arr.push(Math.floor(Math.random()*thres))
+     while(arr.length < count){
+       n = Math.floor(Math.random()*thres)
+       while(arr.includes(n)){
+         n = Math.floor(Math.random()*thres)
+       }
+       arr.push(n)
+     }
+     return arr
+   }
+
+   function set_text(q,v,type){
+     var variable
+     if(type == 'random'){variable = random_story}
+     else if(type == 'survival'){variable = surv_story}
+     else{variable = focus_story}
+     document.getElementById(q+'optionset').value=v.toString()
+     // for some reason the optionset doesn't always save.. so gonna repeat it with jquery just in case
+     $('#'+q+'optionset').val(v.toString())
+     document.getElementById(q+'textA').innerHTML=variable[v][0]
+     document.getElementById(q+'textB').innerHTML=variable[v][1]
+     document.getElementById(q+'textC').innerHTML=variable[v][2]
+     document.getElementById(q+'textD').innerHTML=variable[v][3]
+   }
+
+   function chooseOptions(){
+     randomnums = genRanNums(1000,2)
+     survnum = genRanNums(500,1)
+     focusnum = genRanNums(500,1)
+     set_text('q0',randomnums[0],'random')
+     set_text('q1',focusnum[0],'focus')
+     set_text('q2',survnum[0],'survival')
+     set_text('q3',randomnums[1],'random')
+
+     document.getElementById("gender").selectedIndex = -1
+     document.getElementById("education").selectedIndex = -1
+     document.getElementById("agegroup").selectedIndex = -1
+
+     options_set = true
+   }
+
+    function wordcount(box,v){
+      words = v.split(/\b\W+\b/)
+      if(words.length == 1 && $.trim(words[0]).length==0){
+        box.innerHTML = '<small>'+0+'</small>'
+      }else{
+        box.innerHTML = '<small>'+words.length+'</small>'
+      }
+    }
+
+    function showsurvey(){
+      document.getElementById('demographics').style.display='none'
+      document.getElementById('realsurvey').style.display='block'
+    }
+</script>

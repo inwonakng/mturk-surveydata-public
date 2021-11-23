@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<!-- You must include this JavaScript file -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+<!-- for random -->
+<script src="https://drive.google.com/uc?export=download&id=1ofnvA8qAEHUnOC7qimp4j7mpniAeCoEb"></script>
+<!-- for focused -->
+<!-- <script src="https://drive.google.com/uc?export=download&id=1lKt_W9wLwHkwr2U78jMbPRICcMPyiPm4"></script> -->
+<!-- for survivability -->
+<script src="https://drive.google.com/uc?export=download&id=1eMkLdOIwz0R4Pv7h6GZ1UVQYJYMAfyCz"></script>
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,
+   please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
+<!-- You must include crowd-form so that your task submits answers to MTurk -->
+
+<style>
+   table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      width: 520px;
+   }
+   .container {     
+        width: 960px;
+        height:200px;
+   }
+
+   .container div {
+        margin:10px;
+        width: 520px;
+        height:180px;
+        float:left;
+   }
+   .container a {
+        width: 180;
+        height:180px;
+        float:left;
+   }
+
+   .container l {
+        width: 90px;
+        height:180px;
+        float:left;
+   }
+
+   .smallcontainer {
+        margin:10px;
+        width: 800px;
+        height:30px;
+   }
+   .smallcontainer div {
+        width: 200px;
+        height:30px;
+        float:left;
+   }
+   .smallcontainer a {
+        width: 200px;
+        height:30px;
+        float:left;
+   }
+
+   .smallcontainer l {
+        width: 120px;
+        height:30px;
+        float:left;
+   }
+
+</style>
+
+<div id="consentform">
+  <p>
+    Please read the consent form and indicate that you have knowingly consented to participate in the research.
+  </p>
+  <p>
+    <a href="https://drive.google.com/file/d/1JH3kVK2fftHV7oWuckYhGjwA_mWAhQtk/view?usp=sharing" target="blank">Click here to view the research consent form</a>
+  </p>
+  By clicking <b>I Accept</b> below, I confirm that I am at least 18
+  years of age and that I consent to participation in the research study
+  described above.
+  <br>
+  <br>
+  <crowd-button onclick="accept()">I accept</crowd-button>
+  <crowd-button onclick="goback()">I do not accept</crowd-button>
+</div>
+
+<crowd-form id="survey" answer-format="flatten-objects" style="display:none">
+  <div id="demographics">
+    <p>This is an optional survey to help us understand the results of our survey better. </p>
+    <p>Please note that these fields are not required, and you can skip if you do not want to share demographic information.</p>
+    <br>
+    <label for="agegroup">Age group:</label>
+    <select name="agegroup" id="agegroup">
+      <option value="10~20">10~19</option>
+      <option value="20~29">20~29</option>
+      <option value="30~39">30~39</option>
+      <option value="40~49">40~49</option>
+      <option value="50~59">50~59</option>
+      <option value="60~69">60~69</option>
+      <option value="other">Other</option>
+    </select>
+    <br>
+    <label for="gender">Gender:</label>
+    <select name="gender" id="gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+    <br>
+    <label for="education">Highest education level:</label>
+    <select name="education" id="education">
+      <option value="highschool">Highschool</option>
+      <option value="college">College</option>
+      <option value="graduate">Graduate School (or any other post college education)</option>
+      <option value="other">Other</option>
+    </select>
+    <br>
+    <br>
+    <crowd-button onclick='showsurvey()'>Submit and next</crowd-button>
+    <crowd-button onclick='showsurvey()'>Skip</crowd-button>
+    <br>
+    <br>
+  </div>
+  <div id='realsurvey' style="display:none">
+   <crowd-instructions link-text="View instructions" link-type="button">
+      <short-summary>
+         <p>Given the particular scenario, please rank the options in an order that you think you are more likely to take action for</p>
+      </short-summary>
+      <detailed-instructions>
+         <h3>Assign points to each option according to how likely you are to help the character(s) in each option</h3>
+         <p>Given the particular scenario, please assign points to the given options.
+            Higher points for options that you are more likely to help, and lower points for options that
+            you are less likely to help in comparision to the other given options.
+         </p>
+      </detailed-instructions>
+      <positive-example>
+         <p>Points: A = 10 > B = 7 > C = 3</p>
+         <p>Explanation: I would choose to save A above everyone else because
+            I think that A is the most valuable to society.
+            Then I would rank B above C because C is old and B has a bright future ahead of her.
+            I also think that A has the best use of the life jacket,
+            since her chance of survival with it is the highest.
+         </p>
+         <p>This answer shows why you scored each options in the way you did, and you provide an explanation for all rankings.</p>
+      </positive-example>
+      <negative-example>
+         <p>Points: A = 10 > B = 1 > C = 0</p>
+         <p>Explanation: I like A's type the most and don't care much about the others</p>
+         <p>This answer does not provide a specific enough reasoning for your ranking.
+            Even if the participant provided rankings, they did not provide an explicit
+            reasoning behind the score of each option in the context of the given scenario.
+         </p>
+      </negative-example>
+   </crowd-instructions>
+   <h3 id="scenario">Scenario 1</h3>
+   <div id="prompt">
+    <p>
+        <!-- Where the scenario is explained -->
+        Suppose you are on an airplane that is about to land on a water body and there is only one rescue jacket left. Given the following options, who are you more likely to give the jacket to?
+    </p>
+    <h4>Please assign each option a score on how you feel about them</h4>
+      <p><small>
+      These scores are relative to each other and are meant to express the ranking between them.
+      </small>
+      <br>
+      <small>
+      The more you think this option should be saved, the higher the score should be.
+      </small>
+      <br>
+      <small>
+      example: A score of A: 10, B: 8, C: 6 would mean you want to save option A the most, then option B and finally option C.
+      </small></p>
+  </div>
+   <div id="q0">
+        <div class="container">
+            <div>
+                <b>Option A:</b>
+                <br><br>
+                <c id="q0textA">            
+                    <table><tr><th>age</th><td>senior citizen</td></tr><tr><th>health</th><td>terminally ill(less than 3 years left)</td></tr><tr><th>gender</th><td>female</td></tr><tr><th>income level</th><td>low</td></tr><tr><th>survival with jacket</th><td>14%</td></tr><tr><th>survival without jacket</th><td>6%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q0optionA" id="q0optionA" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option B:</b>
+                <br><br>
+                <c id="q0textB">            
+                    <table><tr><th>age</th><td>middle aged</td></tr><tr><th>health</th><td>moderate health problems</td></tr><tr><th>gender</th><td>female</td></tr><tr><th>income level</th><td>high</td></tr><tr><th>survival with jacket</th><td>43%</td></tr><tr><th>survival without jacket</th><td>24%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q0optionB" id="q0optionB " min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option C:</b>
+                <br><br>
+                <c id="q0textC">            
+                    <table><tr><th>age</th><td>18 year old</td></tr><tr><th>health</th><td>in great health</td></tr><tr><th>gender</th><td>male</td></tr><tr><th>income level</th><td>N/A</td></tr><tr><th>survival with jacket</th><td>53%</td></tr><tr><th>survival without jacket</th><td>36%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q0optionC" id="q0optionC" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option D:</b>
+                <br><br>
+                <c id="q0textD">            
+                    <table><tr><th>age</th><td>young child</td></tr><tr><th>health</th><td>small health problems</td></tr><tr><th>gender</th><td>male</td></tr><tr><th>income level</th><td>N/A</td></tr><tr><th>survival with jacket</th><td>21%</td></tr><tr><th>survival without jacket</th><td>8%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q0optionD" id="q0optionD" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+      <br>
+      <input type="text" name="q0optionset" id="q0optionset" style="display:none" value = "0">
+      <div>
+         <p>Please explain your reasoning behind the scores that you assigned to each option (Please write more than 20 words)</p>
+         <crowd-text-area name="q0essay" id="q0essay" onkeyup="wordcount(q0wordcount,this.value)" rows="4" placeholder="..." required style="border:2px solid #000000"></crowd-text-area>
+         <small>Wordcount: </small><a id=q0wordcount><small>0</small></a>
+         <br>
+         <!--
+		 <p>(Optional) If you have any suggestions on some aspects that could affect your decision, please let us know below.</p>
+         <p>Noteworthy suggestions input may receive bonus compensation</p>
+         <crowd-text-area name="q0suggest" id="q0suggest" rows="2" placeholder="..."  style="border:2px solid #000000"></crowd-text-area>
+		 -->
+      </div>
+   </div>
+   <div id="q1" style="display:none">
+        <div class="container">
+            <div>
+                <b>Option A:</b>
+                <br><br>
+                <c id="q1textA">            
+                    <table><tr><th>age</th><td>18 year old</td></tr><tr><th>health</th><td>small health problems</td></tr><tr><th>gender</th><td>female</td></tr><tr><th>income level</th><td>N/A</td></tr><tr><th>survival with jacket</th><td>33%</td></tr><tr><th>survival without jacket</th><td>21%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q1optionA" id="q1optionA" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option B:</b>
+                <br><br>
+                <c id="q1textB">            
+                    <table><tr><th>age</th><td>young child</td></tr><tr><th>health</th><td>moderate health problems</td></tr><tr><th>gender</th><td>female</td></tr><tr><th>income level</th><td>N/A</td></tr><tr><th>survival with jacket</th><td>19%</td></tr><tr><th>survival without jacket</th><td>15%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q1optionB" id="q1optionB" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option C:</b>
+                <br><br>
+                <c id="q1textC">            
+                    <table><tr><th>age</th><td>middle aged</td></tr><tr><th>health</th><td>terminally ill(less than 3 years left)</td></tr><tr><th>gender</th><td>male</td></tr><tr><th>income level</th><td>mid</td></tr><tr><th>survival with jacket</th><td>14%</td></tr><tr><th>survival without jacket</th><td>10%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q1optionC" id="q1optionC" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option D:</b>
+                <br><br>
+                <c id="q1textD">            
+                    <table><tr><th>age</th><td>senior citizen</td></tr><tr><th>health</th><td>in great health</td></tr><tr><th>gender</th><td>male</td></tr><tr><th>income level</th><td>mid</td></tr><tr><th>survival with jacket</th><td>34%</td></tr><tr><th>survival without jacket</th><td>13%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q1optionD" id="q1optionD" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+      <br>
+      <input type="text" name="q1optionset" id="q1optionset" style="display:none" value = "1">
+      <div>
+         <p>Please explain your reasoning behind the scores that you assigned to each option (Please write more than 20 words)</p>
+         <crowd-text-area name="q1essay" id="q1essay" onkeyup="wordcount(q1wordcount,this.value)" rows="4" placeholder="..." required style="border:2px solid #000000"></crowd-text-area>
+         <small>Wordcount: </small><a id=q1wordcount><small>0</small></a>
+         <br>
+		 <!--
+         <p>(Optional) If you have any suggestions on some aspects that could affect your decision, please let us know below.</p>
+         <p>Noteworthy suggestions input may receive bonus compensation</p>
+         <crowd-text-area name="q1suggest" id="q1suggest" rows="2" placeholder="..."  style="border:2px solid #000000"></crowd-text-area>
+		 -->
+      </div>
+   </div>
+   <div id="q2" style="display:none">
+        <div class="container">
+            <div>
+                <b>Option A:</b>
+                <br><br>
+                <c id="q2textA">            
+                    <table><tr><th>age</th><td>middle aged</td></tr><tr><th>health</th><td>moderate health problems</td></tr><tr><th>gender</th><td>female</td></tr><tr><th>income level</th><td>mid</td></tr><tr><th>survival with jacket</th><td>40%</td></tr><tr><th>survival without jacket</th><td>0%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q2optionA" id="q2optionA" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option B:</b>
+                <br><br>
+                <c id="q2textB">            
+                    <table><tr><th>age</th><td>middle aged</td></tr><tr><th>health</th><td>moderate health problems</td></tr><tr><th>gender</th><td>female</td></tr><tr><th>income level</th><td>mid</td></tr><tr><th>survival with jacket</th><td>75%</td></tr><tr><th>survival without jacket</th><td>25%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q2optionB" id="q2optionB" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option C:</b>
+                <br><br>
+                <c id="q2textC">            
+                    <table><tr><th>age</th><td>middle aged</td></tr><tr><th>health</th><td>moderate health problems</td></tr><tr><th>gender</th><td>female</td></tr><tr><th>income level</th><td>mid</td></tr><tr><th>survival with jacket</th><td>100%</td></tr><tr><th>survival without jacket</th><td>75%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q2optionC" id="q2optionC" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option D:</b>
+                <br><br>
+                <c id="q2textD">            
+                    <table><tr><th>age</th><td>middle aged</td></tr><tr><th>health</th><td>moderate health problems</td></tr><tr><th>gender</th><td>female</td></tr><tr><th>income level</th><td>mid</td></tr><tr><th>survival with jacket</th><td>50%</td></tr><tr><th>survival without jacket</th><td>20%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q2optionD" id="q2optionD" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+      <br>
+      <input type="text" name="q2optionset" id="q2optionset" style="display:none" value = "0">
+      <div>
+         <p>Please explain your reasoning behind the scores that you assigned to each option (Please write more than 20 words)</p>
+         <crowd-text-area name="q2essay" id="q2essay" onkeyup="wordcount(q2wordcount,this.value)" rows="4" placeholder="..." required style="border:2px solid #000000"></crowd-text-area>
+         <small>Wordcount: </small><a id=q2wordcount><small>0</small></a>
+         <br>
+		 <!--
+         <p>(Optional) If you have any suggestions on some aspects that could affect your decision, please let us know below.</p>
+         <p>Noteworthy suggestions input may receive bonus compensation</p>
+         <crowd-text-area name="q2suggest" id="q2suggest" rows="2" placeholder="..."  style="border:2px solid #000000"></crowd-text-area>
+		 -->
+      </div>
+   </div>
+   <div id="q3" style="display:none">
+        <div class="container">
+            <div>
+                <b>Option A:</b>
+                <br><br>
+                <c id="q3textA">            
+                    <table><tr><th>age</th><td>18 year old</td></tr><tr><th>health</th><td>small health problems</td></tr><tr><th>gender</th><td>male</td></tr><tr><th>income level</th><td>N/A</td></tr><tr><th>survival with jacket</th><td>25%</td></tr><tr><th>survival without jacket</th><td>18%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q3optionA" id="q3optionA" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option B:</b>
+                <br><br>
+                <c id="q3textB">            
+                    <table><tr><th>age</th><td>young child</td></tr><tr><th>health</th><td>in great health</td></tr><tr><th>gender</th><td>female</td></tr><tr><th>income level</th><td>N/A</td></tr><tr><th>survival with jacket</th><td>29%</td></tr><tr><th>survival without jacket</th><td>14%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q3optionB" id="q3optionB" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option C:</b>
+                <br><br>
+                <c id="q3textC">            
+                    <table><tr><th>age</th><td>23 year old</td></tr><tr><th>health</th><td>moderate health problems</td></tr><tr><th>gender</th><td>female</td></tr><tr><th>income level</th><td>low</td></tr><tr><th>survival with jacket</th><td>39%</td></tr><tr><th>survival without jacket</th><td>19%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q3optionC" id="q3optionC" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+        <div class="container">
+            <div>
+                <b>Option D:</b>
+                <br><br>
+                <c id="q3textD">            
+                    <table><tr><th>age</th><td>senior citizen</td></tr><tr><th>health</th><td>terminally ill(less than 3 years left)</td></tr><tr><th>gender</th><td>male</td></tr><tr><th>income level</th><td>low</td></tr><tr><th>survival with jacket</th><td>19%</td></tr><tr><th>survival without jacket</th><td>9%</td></tr></table>
+                </c>
+            </div>
+            <l style="display:flex;align-items:center;">Less Likely</l>
+            <a style="display:flex;align-items:center;"><crowd-slider name="q3optionD" id="q3optionD" min="0" max="10" required pin></crowd-slider></a>
+            <l style="display:flex;align-items:center;">More Likely</l>
+        </div>
+      <br>
+      <input type="text" name="q3optionset" id="q3optionset" style="display:none" value= "2">
+      <div>
+         <p>Please explain your reasoning behind the scores that you assigned to each option (Please write more than 20 words)</p>
+         <crowd-text-area name="q3essay" id="q3essay" onkeyup="wordcount(q3wordcount,this.value)" rows="4" placeholder="..." required style="border:2px solid #000000"></crowd-text-area>
+         <small>Wordcount: </small><a id=q3wordcount><small>0</small></a>
+         <br>
+		 <!--
+         <p>(Optional) If you have any suggestions on some aspects that could affect your decision, please let us know below.</p>
+         <p>Noteworthy suggestions input may receive bonus compensation</p>
+         <crowd-text-area name="q3suggest" id="q3suggest" rows="2" placeholder="..."  style="border:2px solid #000000"></crowd-text-area>
+		 -->
+      </div>
+   </div>
+   
+   <div id="q4" style="display:none">
+    <h4>What information about the passengers did you think was most important to making the decision? </h4>
+    <br>
+      <div class="smallcontainer">
+        <div>
+		    	<b>Age</b>
+			  </div>
+            <l>Less Important</l>
+            <a><crowd-slider name="age_importance" id="age_importance" min="0" max="10" required pin></crowd-slider></a>
+            <l>More Important</l>
+      </div>
+	  <br>
+      <div class="smallcontainer">
+        <div>
+          <b>Gender</b>
+        </div>
+            <l>Less Important</l>
+            <a><crowd-slider name="gender_importance" id="gender_importance" min="0" max="10" required pin></crowd-slider></a>
+            <l>More Important</l>
+      </div>
+	  <br>
+      <div class="smallcontainer">
+        <div>
+          <b>Income level</b>
+        </div>
+            <l>Less Important</l>
+            <a><crowd-slider name="income_importance" id="income_importance" min="0" max="10" required pin></crowd-slider></a>
+            <l>More Important</l>
+      </div>
+	  <br>
+      <div class="smallcontainer">
+        <div>
+          <b>Health</b>
+        </div>
+            <l>Less Important</l>
+            <a><crowd-slider name="health_importance" id="health_importance" min="0" max="10" required pin></crowd-slider></a>
+            <l>More Important</l>
+      </div>
+	  <br>
+      <div class="smallcontainer">
+        <div>
+          <b>Survival chance with jacket</b>
+        </div>
+            <l>Less Important</l>
+            <a><crowd-slider name="survwith_importance" id="survwith_importance" min="0" max="10" required pin></crowd-slider></a>
+            <l>More Important</l>
+      </div>
+      <br>
+      <div class="smallcontainer">
+        <div>
+          <b>Survival chance increase with jakcet</b>
+        </div>
+            <l>Less Important</l>
+            <a><crowd-slider name="survdif_importance" id="survdif_importance" min="0" max="10" required pin></crowd-slider></a>
+            <l>More Important</l>
+      </div>
+	  
+	  <br>
+	  <div>
+      <h4>Are there any other factors not mentioned in the list above that you think are also important in making the decision?</h4>
+      <crowd-text-area name="suggestion" rows="2" placeholder="..." style="border:2px solid #000000"></crowd-text-area>
+	  </div>
+      <br>
+   </div>
+   
+   <br>
+   <crowd-button id='prevbtn' onclick="prev()" disabled>Prev</crowd-button>
+   <a id=qindex></a>
+   <crowd-button id='nextbtn' onclick="next()">Next</crowd-button>
+   <br>
+ </div>
+</crowd-form>
+
+<script>
+  window.onload = chooseOptions
+  var options_set = false
+  var suggestion_on = true
+  var questions = [document.getElementById('q0'),
+                   document.getElementById('q1'),
+                   document.getElementById('q2'),
+                   document.getElementById('q3'),
+				   document.getElementById('q4')]
+
+   function chooseOptions(){
+     randomnums = genRanNums(1000,2)
+     survnum = genRanNums(500,1)
+     focusnum = genRanNums(500,1)
+     set_text('q0',randomnums[0],'random')
+     set_text('q1',focusnum[0],'random')
+     set_text('q2',survnum[0],'survival')
+     set_text('q3',randomnums[1],'random')
+
+     document.getElementById("gender").selectedIndex = -1
+     document.getElementById("education").selectedIndex = -1
+     document.getElementById("agegroup").selectedIndex = -1
+
+     document.getElementById('qindex').innerHTML = '1/' + questions.length
+
+     options_set = true
+
+    //  use this functions to skip pages to debug
+    //  accept()
+    //  showsurvey()
+    //  next()
+    //  next()
+    //  next()
+    //  next()
+   }
+
+   function next(){
+     var show_index
+   //   console.log('okay..')
+     for(i=0;i<questions.length;i++){
+       if(questions[i].style.display !='none' && i < questions.length-1){
+         //  console.log('found'+i)
+         document.getElementById('prompt').style.display='block'
+         document.getElementById('prevbtn').disabled=false
+         show_index = i + 2
+         questions[i].style.display = 'none'
+         questions[i+1].style.display = 'block'
+         document.getElementById('scenario').scrollIntoView()
+         document.getElementById('qindex').text = show_index + '/' + questions.length
+         document.getElementById('scenario').innerHTML = 'Scenario '+show_index
+         if(i == questions.length-2){
+            document.getElementById('nextbtn').disabled=true
+            if(suggestion_on){
+               document.getElementById('scenario').innerHTML = 'Final Question'
+               document.getElementById('prompt').style.display='none'
+            }
+         }
+         break
+       }
+     }
+   }
+
+   function prev(){
+     var show_index
+     for(i=0;i<questions.length;i++){
+       if(questions[i].style.display != 'none' && i > 0){
+         document.getElementById('prompt').style.display='block'
+         document.getElementById('nextbtn').disabled=false
+         show_index = i
+         questions[i].style.display = 'none'
+         questions[i-1].style.display = 'block'
+         document.getElementById('scenario').scrollIntoView()
+         // display[i] = 0
+         // display[i-1] = 1
+         document.getElementById('qindex').text = show_index + '/' + questions.length
+         document.getElementById('scenario').innerHTML = 'Scenario '+show_index
+         if(i == 1){
+           document.getElementById('prevbtn').disabled=true
+         }
+         break
+       }
+     }
+   }
+
+   function accept(){
+     document.getElementById("consentform").style.display='none'
+     document.getElementById('survey').style.display='block'
+     if(!options_set){
+       chooseOptions()
+     }
+   }
+
+   function goback(){
+     window.history.back()
+   }
+
+   function genRanNums(thres,count){
+     arr = []
+     arr.push(Math.floor(Math.random()*thres))
+     while(arr.length < count){
+       n = Math.floor(Math.random()*thres)
+       while(arr.includes(n)){
+         n = Math.floor(Math.random()*thres)
+       }
+       arr.push(n)
+     }
+     return arr
+   }
+
+   function set_text(q,v,type){
+     var variable
+     if(type == 'random'){variable = random_story}
+     else if(type == 'survival'){variable = surv_story}
+     else{variable = focus_story}
+    //  variable = random_story
+     document.getElementById(q+'optionset').value=v.toString()
+     // for some reason the optionset doesn't always save.. so gonna repeat it with jquery just in case
+     $('#'+q+'optionset').val(v.toString())
+     document.getElementById(q+'textA').innerHTML=variable[v][0]
+     document.getElementById(q+'textB').innerHTML=variable[v][1]
+     document.getElementById(q+'textC').innerHTML=variable[v][2]
+	 document.getElementById(q+'textD').innerHTML=variable[v][3]
+   }
+
+    function wordcount(box,v){
+      words = v.split(/\b\W+\b/)
+      if(words.length == 1 && $.trim(words[0]).length==0){
+        box.innerHTML = '<small>'+0+'</small>'
+      }else{
+        box.innerHTML = '<small>'+words.length+'</small>'
+      }
+    }
+
+    function showsurvey(){
+      document.getElementById('demographics').style.display='none'
+      document.getElementById('realsurvey').style.display='block'
+    }
+</script>

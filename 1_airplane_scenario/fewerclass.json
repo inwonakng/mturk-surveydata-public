@@ -1,0 +1,67 @@
+{
+    "categories": {
+      "age": {
+        "0": "young child",
+        "1": "18 year old",
+        "2": "23 year old",
+        "3": "27 year old",
+        "4": "middle aged",
+        "5": "senior citizen"
+      },
+      "health": {
+        "0": "in great health",
+        "1": "small health problems",
+        "2": "moderate health problems",
+        "3": "terminally ill(less than 3 years left)"
+      },
+      "gender": {
+        "0": "male",
+        "1": "female"
+      },
+      "income level": {
+        "0": "low",
+        "1": "mid",
+        "2": "high"
+      }
+    },
+    "bad combo": {
+      "young child": {
+        "categories": [
+          "income level"
+        ],
+        "classes": {
+        }
+      },
+      "18 year old": {
+        "categories": [
+          "income level"
+        ],
+        "classes": {
+        }
+      },
+      "23 year old": {
+        "categories": [
+        ],
+        "classes": {
+          "income level": ["2"]
+        }
+      }
+    },
+    "survival factors": {
+      "age": {
+        "0": {"without": ["0","20"], "with": ["w/o","30"]},
+        "1": {"without": ["30","50"], "with": ["w/o","80"]},
+        "2": {"without": ["30","70"], "with": ["w/o","90"]},
+        "3": {"without": ["30","60"], "with": ["w/o","80"]},
+        "4": {"without": ["20","60"], "with": ["w/o","70"]},
+        "5": {"without": ["0","20"], "with": ["w/o","40"]}
+      },
+      "health": {
+        "0": {"mult": ["0.8","1.0"]},
+        "1": {"mult": ["0.5","0.9"]},
+        "2": {"mult": ["0.3","0.8"]},
+        "3": {"mult": ["0.3","0.7"]}
+      }
+    }
+  }
+    

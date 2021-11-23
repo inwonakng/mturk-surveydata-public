@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<!-- You must include this JavaScript file -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+<script src="https://drive.google.com/uc?export=download&id=1Bre5YuvagzOqlOKhoPAAGmxbReg9UAiR"></script>
+<script src="https://drive.google.com/uc?export=download&id=1tHx3o-Zr-7GsTjSGqKBqzeXuqGrwa1XX"></script>
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,
+   please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
+<!-- You must include crowd-form so that your task submits answers to MTurk -->
+
+<meta charset="utf-8"/>
+
+<style>
+   table {
+      width: 110px;
+      font-size: 70%;
+      border: 1px solid black;
+      border-collapse: collapse;
+   }
+   tr{
+      width: 40px;
+      border: 1px solid black;
+      border-collapse: collapse;
+   }
+   td {
+      width: 70px;
+      white-space: pre-line;
+      border: 1px solid black;
+      border-collapse: collapse;
+   }
+
+   h4 {
+      margin:10px;
+    }
+
+   .imgbox {
+        position: relative;
+        width:640px;
+        height:360px;
+   }
+
+   .imgbox img{
+        height:360px;
+   }
+
+   .imgbox bigpop{
+        position:absolute;
+        top: 135px;
+        left: 130px;
+   }
+
+   .imgbox smallpop{
+        position:absolute;
+        top: 190px;
+        left: 410px;
+   }
+</style>
+
+<div id="consentform">
+  <p>
+    Please read the consent form and indicate that you have knowingly consented to participate in the research.
+  </p>
+  <p>
+    <a href="https://drive.google.com/file/d/1JH3kVK2fftHV7oWuckYhGjwA_mWAhQtk/view?usp=sharing" target="blank">Click here to view the research consent form</a>
+  </p>
+  By clicking <b>I Accept</b> below, I confirm that I am at least 18
+  years of age and that I consent to participation in the research study
+  described above.
+  <br>
+  <br>
+  <crowd-button onclick="accept()">I accept</crowd-button>
+  <crowd-button onclick="goback()">I do not accept</crowd-button>
+</div>
+
+<crowd-form id="survey" answer-format="flatten-objects" style="display:none">
+  <div id="demographics">
+    <p>This is an optional survey to help us understand the results of our survey better. </p>
+    <p>Please note that these fields are not required, and you can skip if you do not want to share demographic information.</p>
+    <br>
+    <label for="agegroup">Age group:</label>
+    <select name="agegroup" id="agegroup">
+      <option value="10~20">10~19</option>
+      <option value="20~29">20~29</option>
+      <option value="30~39">30~39</option>
+      <option value="40~49">40~49</option>
+      <option value="50~59">50~59</option>
+      <option value="60~69">60~69</option>
+      <option value="other">Other</option>
+    </select>
+    <br>
+    <label for="gender">Gender:</label>
+    <select name="gender" id="gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+    <br>
+    <label for="education">Highest education level:</label>
+    <select name="education" id="education">
+      <option value="highschool">Highschool</option>
+      <option value="college">College</option>
+      <option value="graduate">Graduate School (or any other post college education)</option>
+      <option value="other">Other</option>
+    </select>
+    <br>
+    <br>
+    <crowd-button onclick='showsurvey()'>Submit and next</crowd-button>
+    <crowd-button onclick='showsurvey()'>Skip</crowd-button>
+    <br>
+    <br>
+  </div>
+  <div id='realsurvey' style="display:none">
+   <crowd-instructions link-text="View instructions" link-type="button">
+      <short-summary>
+         <p>Given the particular scenario, please indicate how you would vote towards a policy given the variables and your situation</p>
+      </short-summary>
+      <detailed-instructions>
+         <h3>Would you vote for this policy? Indicate yes or no</h3>
+         <p>After going through the 3 questions, please explain why you felt such ways to the policies in the text response.
+           Indicate which variable you felt were the most important in your decision making
+         </p>
+      </detailed-instructions>
+      <positive-example>
+        I made my decision based on the energy efficiency. I would like my nation to always have the most power, and I believe that some risk is anavoidable.
+      </positive-example>
+    <negative-example>
+      I like puppies and ice cream.
+    </negative-example>
+   </crowd-instructions>
+   <h3 id="scenario" style="margin:10px;">Scenario 1</h3>
+   <div id="prompt" style="margin:10px;">
+    <p id="promptbody" style="white-space: pre-line;">The nation of cities C1 and C2 want to build a new power plant.
+    The power plant would guarantee an increase in everyone in the nation's (including you) income by boosting the economy.
+    But it also comes with the risk of decreasing the lifespan of people in the city it is built.
+    If a power plant is not built in your city, it will <b>not</b> have any negative effects on you, but it will still affect the residents of that city only. If it is built in your city, everyone in your city (including you) face the risk.
+      You are a resident of <b>city  <a id='region'></a></b>.
+    </p>
+    <ul id='icon_list'>
+    </ul>
+      <b style="font-size: medium;">Please indicate whether you would vote in favor of this proposal</b>
+  </div>
+   <div id="q0">
+     <div>
+     <h4>Proposal 1</h4>
+      <div class="imgbox">
+        <img id="q0diagram" src="https://drive.google.com/uc?export=download&id=1FEFsIQtGMtjsD6lVI68WytfG5Jnd9Yqz">
+        <b><bigpop id="q0c1pop"></bigpop></b>
+        <b><smallpop id="q0c2pop"></smallpop></b>
+      </div>
+      </div>
+      <l style="display:flex;align-items:center;">
+        <crowd-radio-group required>
+          <crowd-radio-button name="q0_yes" value="yes">Yes</crowd-radio-button>
+          <crowd-radio-button name="q0_no" value="no">No</crowd-radio-button>
+        </crowd-radio-group>
+      </l>
+   </div>
+   <div id="q1" style="display:none">
+    <div>
+    <h4>Proposal 2</h4>
+      <div class="imgbox">
+        <img id="q1diagram" src="https://drive.google.com/uc?export=download&id=1FEFsIQtGMtjsD6lVI68WytfG5Jnd9Yqz">
+        <b><bigpop id="q1c1pop"></bigpop></b>
+        <b><smallpop id="q1c2pop"></smallpop></b>
+      </div>
+    </div>
+    <l style="display:flex;align-items:center;">
+      <crowd-radio-group required>
+        <crowd-radio-button name="q1_yes" value="yes">Yes</crowd-radio-button>
+        <crowd-radio-button name="q1_no" value="no">No</crowd-radio-button>
+      </crowd-radio-group>
+    </l>
+   </div>
+   <div id="q2" style="display:none">
+      <div>
+      <h4>Proposal 3</h4>
+      <div class="imgbox">
+        <img id="q2diagram" src="https://drive.google.com/uc?export=download&id=1FEFsIQtGMtjsD6lVI68WytfG5Jnd9Yqz">
+        <b><bigpop id="q2c1pop"></bigpop></b>
+        <b><smallpop id="q2c2pop"></smallpop></b>
+      </div>
+      </div>
+        <l style="display:flex;align-items:center;">
+          <crowd-radio-group required>
+            <crowd-radio-button name="q2_yes" value="yes">Yes</crowd-radio-button>
+            <crowd-radio-button name="q2_no" value="no">No</crowd-radio-button>
+          </crowd-radio-group>
+        </l>
+   </div>
+    <div id="q3" style="display:none">
+    <div>
+    <h4>Proposal 4</h4>
+    <div class="imgbox">
+      <img id="q3diagram" src="https://drive.google.com/uc?export=download&id=1FEFsIQtGMtjsD6lVI68WytfG5Jnd9Yqz">
+      <b><bigpop id="q3c1pop"></bigpop></b>
+      <b><smallpop id="q3c2pop"></smallpop></b>
+    </div>
+    </div>
+      <l style="display:flex;align-items:center;">
+        <crowd-radio-group required>
+          <crowd-radio-button name="q3_yes" value="yes">Yes</crowd-radio-button>
+          <crowd-radio-button name="q3_no" value="no">No</crowd-radio-button>
+        </crowd-radio-group>
+      </l>
+    </div>
+
+   <div id="q4" style="display:none">
+    <p>Please explain your reasoning behind responses you had for the questions until now.
+      Indicate which of the variables influenced you to make your decisions. (Please write more than 20 words)
+    </p>
+     <crowd-text-area name="written" id="written" onkeyup="wordcount(wcount,this.value)" rows="4" placeholder="..." required style="border:2px solid #000000"></crowd-text-area>
+     <small>Wordcount: </small><a id=wcount><small>0</small></a>
+   </div>
+
+   <input type="text" name="optionset" id="optionset" style="display:none" value="0">
+   <input type="text" name="usercity" id="usercity" style="display:none" value="0">
+   <input type="text" name="num_city" id="num_city" style="display:none" value="0">
+
+   <br>
+   <crowd-button id='prevbtn' onclick="prev()" disabled>Prev</crowd-button>
+   <a id=qindex></a>
+   <crowd-button id='nextbtn' onclick="next()">Next</crowd-button>
+   <br>
+   <br>
+ </div>
+</crowd-form>
+
+<script>
+  window.onload = chooseOptions
+  var options_set = false
+  var suggestion_on = true
+  var questions = [document.getElementById('q0'),
+                   document.getElementById('q1'),
+                   document.getElementById('q2'),
+                   document.getElementById('q3'),
+                   document.getElementById('q4')]
+
+  var cities = ['C1','C2']
+
+   function chooseOptions(){
+    //  setting user city randomly
+     cityindex = genRanNums(cities.length,1)
+     usercity = cities[cityindex]
+     document.getElementById('region').innerHTML = usercity
+     document.getElementById('usercity').value = usercity
+
+     document.getElementById('icon_list').innerHTML = icon_list
+
+    num_cities = genRanNums(2,1)[0] + 1
+
+    document.getElementById('num_city').value = num_cities
+
+    document.getElementById('promptbody').innerHTML = prompt_texts[num_cities]
+
+    rannums = genRanNums(1000,1)
+
+     set_text(rannums[0],num_cities)
+
+     document.getElementById("gender").selectedIndex = -1
+     document.getElementById("education").selectedIndex = -1
+     document.getElementById("agegroup").selectedIndex = -1
+
+     document.getElementById('qindex').innerHTML = '1/' + questions.length
+
+     options_set = true
+
+    //  use this functions to skip pages to debug
+    //  accept()
+    //  showsurvey()
+    //  next()
+    //  next()
+    //  next()
+    //  next()
+   }
+
+   function next(){
+     var show_index
+   //   console.log('okay..')
+     for(i=0;i<questions.length;i++){
+       if(questions[i].style.display !='none' && i < questions.length-1){
+         //  console.log('found'+i)
+         document.getElementById('prompt').style.display='block'
+         document.getElementById('prevbtn').disabled=false
+         show_index = i + 2
+         questions[i].style.display = 'none'
+         questions[i+1].style.display = 'block'
+         document.getElementById('scenario').scrollIntoView()
+         document.getElementById('qindex').text = show_index + '/' + questions.length
+         document.getElementById('scenario').innerHTML = 'Scenario '+show_index
+         if(i == questions.length-2){
+            document.getElementById('nextbtn').disabled=true
+            if(suggestion_on){
+               document.getElementById('scenario').innerHTML = 'Final Question'
+               document.getElementById('prompt').style.display='none'
+            }
+         }
+         break
+       }
+     }
+   }
+
+   function prev(){
+     var show_index
+     for(i=0;i<questions.length;i++){
+       if(questions[i].style.display != 'none' && i > 0){
+         document.getElementById('prompt').style.display='block'
+         document.getElementById('nextbtn').disabled=false
+         show_index = i
+         questions[i].style.display = 'none'
+         questions[i-1].style.display = 'block'
+         document.getElementById('scenario').scrollIntoView()
+         // display[i] = 0
+         // display[i-1] = 1
+         document.getElementById('qindex').text = show_index + '/' + questions.length
+         document.getElementById('scenario').innerHTML = 'Scenario '+show_index
+         if(i == 1){
+           document.getElementById('prevbtn').disabled=true
+         }
+         break
+       }
+     }
+   }
+
+   function accept(){
+     document.getElementById("consentform").style.display='none'
+     document.getElementById('survey').style.display='block'
+     if(!options_set){
+       chooseOptions()
+     }
+   }
+
+   function goback(){
+     window.history.back()
+   }
+
+   function genRanNums(thres,count){
+     arr = []
+     arr.push(Math.floor(Math.random()*thres))
+     while(arr.length < count){
+       n = Math.floor(Math.random()*thres)
+       while(arr.includes(n)){
+         n = Math.floor(Math.random()*thres)
+       }
+       arr.push(n)
+     }
+     return arr
+   }
+
+   function set_text(num,num_cities){
+     vari = plant_story[num]
+     usercity = document.getElementById('usercity').value.toLowerCase()
+
+     for(i=0;i<4;i++){
+        if(num_cities == 2){
+          ac = vari[i]['affected'][0].toLowerCase()
+          ikey = 'u_' + usercity +'_p_' + ac
+        } else {
+          ikey = 'justonecity'
+        }
+
+        document.getElementById('q'+i+'diagram').src = makelink(imgkeys[ikey])
+        document.getElementById('q' + i  + 'c1pop').innerHTML = vari[i]['C1']
+        if(num_cities == 2){
+          document.getElementById('q' + i  + 'c2pop').innerHTML = vari[i]['C2']
+        }
+     }
+     document.getElementById('optionset').value = num.toString()
+   }
+
+    function wordcount(box,v){
+      words = v.split(/\b\W+\b/)
+      if(words.length == 1 && $.trim(words[0]).length==0){
+        box.innerHTML = '<small>'+0+'</small>'
+      }else{
+        box.innerHTML = '<small>'+words.length+'</small>'
+      }
+    }
+
+    function showsurvey(){
+      document.getElementById('demographics').style.display='none'
+      document.getElementById('realsurvey').style.display='block'
+    }
+
+    function makelink(key){
+      return 'https://drive.google.com/uc?export=download&id=' + key
+    }
+</script>

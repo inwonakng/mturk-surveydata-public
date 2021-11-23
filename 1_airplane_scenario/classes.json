@@ -1,0 +1,116 @@
+{
+  "categories": {
+    "age": {
+      "0": "young child",
+      "1": "college student",
+      "2": "27 year old",
+      "3": "middle aged",
+      "4": "senior citizen"
+    },
+    "health": {
+      "0": "with asthma",
+      "1": "in great health",
+      "2": "who is wheelchair bound",
+      "3": "who is terminally ill with 5 years left"
+    },
+    "gender": {
+      "0": "male",
+      "1": "female"
+    },
+    "career": {
+      "0": "professor",
+      "1": "businessperson",
+      "2": "politician",
+      "3": "ex-convict",
+      "4": "homeless person",
+      "5": "parent with a baby",
+      "6": "pizza delivery person"
+    },
+    "purpose of trip": {
+      "0": "on a once in a lifetime chance trip from lottery",
+      "1": "visiting family far away",
+      "2": "on a routine trip",
+      "3": "on the way to an expensive concert",
+      "4": "on the way to an volunteer trip"
+    }
+  },
+  "bad combo": {
+    "young child": {
+      "categories": [
+        "career",
+        "purpose of trip"
+      ],
+      "classes": {
+      }
+    },
+    "college student": {
+      "categories": [],
+      "classes": {
+        "career": ["0","1","2","3","4"]
+      }
+    },
+    "senior citizen": {
+      "categories": [],
+      "classes": {
+        "purpose of trip": ["3"],
+        "career": ["1","3","5","6"]
+      }
+    },
+    "who is wheelchair bound": {
+      "categories": [],
+      "classes": {
+        "career": ["5"]
+      }
+    },
+    "professor": {
+      "categories": [],
+      "classes": {
+        "purpose of trip": ["3"]
+      }
+    },
+    "homeless person": {
+      "categories": [],
+      "classes": {
+        "purpose of trip": ["2","3","4"]
+      }
+    },
+    "pizza delivery person": {
+      "categories": [],
+      "classes": {
+        "purpose of trip": ["2","3"]
+      }
+    }
+  },
+  "survival factors": {
+    "age": {
+      "0": {"without": ["0","20"], "with": ["10","30"]},
+      "1": {"without": ["30","70"], "with": ["w/o","90"]},
+      "2": {"without": ["30","60"], "with": ["w/o","80"]},
+      "3": {"without": ["20","60"], "with": ["w/o","70"]},
+      "4": {"without": ["0","20"], "with": ["10","40"]}
+    },
+    "health": {
+      "0": {"mult": ["0.3","0.9"]},
+      "1": {"mult": ["0.8","1.0"]},
+      "2": {"mult": ["0.2","0.4"]},
+      "3": {"mult": ["0.6","0.9"]}
+    }
+  },
+  "generic combos": {
+    "career": {
+      "age": ["20","40"],
+      "career": "default"
+    },
+    "purpose of trip": {
+      "age": ["20","40"],
+      "gender": ["man", "woman"],
+      "purpose of trip": "default"
+    },
+    "survival": {
+      "age": ["20","30"],
+      "relationship": ["friends", "family members", "clubmates"],
+      "purpose": ["on a vacation","on a volunteer trip"],
+      "survival": {"with": ["50","90"], "without": ["10","30"]}
+    }
+  }
+}
